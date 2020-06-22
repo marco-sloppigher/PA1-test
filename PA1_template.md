@@ -6,7 +6,6 @@ library(stringr)
 library(lubridate)
 library(dplyr)
 library(readr)
-library(impute)
 ```
 
 ### 1. Code for reading in the dataset and/or processing the data
@@ -27,7 +26,7 @@ head(df)
 ## 6    NA 2012-10-01       25
 ```
 
-A closer look at the *interval* variable reveals that the intervals represent the time of the day in hours and minutes, with omitted leading zeros: in the first row of the data frame we thus have the number of steps taken on October 1, 2012, between 00:00 and 00:05 (i.e. between midnight and five minutes past midnight).
+A closer look at the <tt>interval</tt> variable reveals that the intervals represent the time of the day in hours and minutes, with omitted leading zeros: in the first row of the data frame we thus have the number of steps taken on October 1, 2012, between 00:00 and 00:05 (i.e. between midnight and five minutes past midnight).
 
 
 ```r
@@ -69,7 +68,7 @@ head(df_agg)
 ```
 
 ### 2. Histogram of the total number of steps taken each day
-The difference between histogram and bar plot is important here. We should bear in mind that our goal is not to plot the date on the x-axis and the the total number of steps on the y-axis, but rather to create bins of number of steps (whereby the size of the bins is arbitrary) in order to represent the frequency (count) of a certain range of steps (e.g., how many days did the subject take a number of steps that lies between 4000 and 5000?).  
+The difference between histogram and bar plot is important here. We should bear in mind that our goal is not to plot the date on the x-axis and the total number of steps on the y-axis, but rather to create bins of number of steps (whereby the size of the bins is arbitrary) in order to represent the frequency (count) of a certain range of steps (e.g., how many days did the subject take a number of steps that lies between 4000 and 5000?).  
 
 
 ```r
@@ -85,21 +84,30 @@ The histogram tells us, for example, that there are 10 days in which the number 
 ### 3. Mean and median number of steps taken each day
 
 ```r
-mean_steps = round(mean(df_agg$steps, na.rm=TRUE), digits=0)
-print(paste("Mean of steps taken each day:", mean_steps))
+mean_steps <- round(mean(df_agg$steps, na.rm=TRUE), digits=0)
+print(paste("Mean of steps taken each day (rounded to integer):", mean_steps))
 ```
 
 ```
-## [1] "Mean of steps taken each day: 10766"
+## [1] "Mean of steps taken each day (rounded to integer): 10766"
 ```
 
 ```r
-median_steps = median(df_agg$steps, na.rm=TRUE)
+median_steps <- median(df_agg$steps, na.rm=TRUE)
 print(paste("Median of steps taken each day:", median_steps))
 ```
 
 ```
 ## [1] "Median of steps taken each day: 10765"
+```
+
+```r
+total_steps <- sum(df_agg$steps, na.rm=TRUE)
+print(paste("Total number of steps:", total_steps))
+```
+
+```
+## [1] "Total number of steps: 570608"
 ```
 
 ### 4. Time series plot of the average number of steps taken
@@ -144,7 +152,7 @@ tail(df_agg_int)
 ## 288 23:55:00      1.08
 ```
 
-We can see, for example, that in the interval betwenn 23:30 and 23:35, the average number of steps taken is 2.26. Now we create a time series. In order to enable the creation of the plot, we need a dummy date (in this case "2001-01-01"), though this date has no actual meaning.
+We can see, for example, that in the interval betwenn 23:30 and 23:35, the average number of steps taken is 2.60. Now we create a time series. In order to enable the creation of the plot, we need a dummy date (in this case "2001-01-01"), though this date has no actual meaning.
 
 
 ```r
@@ -168,7 +176,7 @@ The next chunk, which is not evaluated, can be used as an alternative to the pre
 ```r
 # The next two lines will compute the difference between the average number of 
 # steps for one inerval and the mean number of steps across all intervals.
-g = mean(df_agg_int$avg.steps)
+g <- mean(df_agg_int$avg.steps)
 df_agg_int <- mutate(df_agg_int, diff = avg.steps - g)
 
 with(df_agg_int, plot(time_series, diff, type = 'l',
@@ -272,8 +280,8 @@ One possible strategy to impute missing data could be to replace all the missing
 
 ```r
 # Initialize counters
-i = 1
-j = 1
+i <- 1
+j <- 1
 
 # Create empty vectors which will be variables in 
 # a data frame used to record imputed values
@@ -331,7 +339,7 @@ tail(df_impute)
 ## 2304 17568  2304 2012-11-30 23:55:00          1.08
 ```
 
-We can see, for example, that the missing number of steps for the interval from 00:00:00 to 00:00:05 has been imputed with the mean value of steps for the same interval in the entire period of two months. I have decided not to round the imputed values to be integers.
+We can see, for example, that the missing number of steps for the interval from 23:30:00 to 23:35:00 has been imputed with the mean value of steps for the same interval in the entire period of two months. I have decided not to round the imputed values to be integers.
 A vector <tt>new_steps</tt> has been created, with the variable <tt>df$steps</tt> now updated with the imputed value.
 
 
@@ -403,16 +411,16 @@ We observe that the count for the range between 10000 and 11000 has increased fr
 
 
 ```r
-mean_steps_new = round(mean(df_agg_new$steps), digits=0)
-print(paste("Mean of steps taken each day:", mean_steps_new))
+mean_steps_new <- round(mean(df_agg_new$steps), digits=0)
+print(paste("Mean of steps taken each day (rounded to integer):", mean_steps_new))
 ```
 
 ```
-## [1] "Mean of steps taken each day: 10766"
+## [1] "Mean of steps taken each day (rounded to integer): 10766"
 ```
 
 ```r
-median_steps_new = median(df_agg_new$steps)
+median_steps_new <- median(df_agg_new$steps)
 print(paste("Median of steps taken each day:", median_steps_new))
 ```
 
@@ -420,7 +428,17 @@ print(paste("Median of steps taken each day:", median_steps_new))
 ## [1] "Median of steps taken each day: 10766"
 ```
 
-After we impute the missing data, there is no change in the mean, and the median increased only by 1. We would have obtained a different result if the NA values had been converted to 0 instead of being ignored. In that case, the 8 missing days would have 0 steps, wich would result in lower values.
+```r
+total_steps_new <- sum(df_agg_new$steps, na.rm=TRUE)
+print(paste("Total number of steps:", total_steps_new))
+```
+
+```
+## [1] "Total number of steps: 656736"
+```
+
+After we impute the missing data, there is no change in the mean, and the median increased only by 1. The total number of steps increased from 570608 to 656736. The difference (86128) matches the product of the mean (10766) and the number of missing days (8).
+We would have obtained a different result if the NA values had been converted to 0 instead of being ignored. In that case, the 8 missing days would have 0 steps, wich would result in lower values of mean and median.
 
 ### 8. Panel plot comparing the average number of steps taken per 5-minute interval across weekdays and weekends
 
@@ -489,7 +507,7 @@ with(subset(df_days, day=="weekend"), plot(time_series, avg.steps, type = 'l',
 
 ![Plot 4](figure/Plot_4-1.png)
 
-We observe an interesting pattern: during weekdays there is a significant peak at around 08:30 and a second smaller one at about 19:00 (we may surmise that this is before and after work), whereas in the weekdends then activity is more evenly distributed throughout the day.
+We observe an interesting pattern: during weekdays there is a significant peak at around 08:30 and a second smaller one at about 19:00 (we may surmise that the subject goes for a walk before and after work), whereas in the weekdends then activity is more evenly distributed throughout the day.
 
 
 
