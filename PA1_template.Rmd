@@ -82,12 +82,11 @@ with(df_agg_int, plot(time_series, avg.steps, type = 'l',
 ```
 
 The graph shows that, on average, there is a peak in the number of steps taken somewhere between 08:00 and 09:00, whereas the average is very close to zero in the intervals between midnight and 06:00.
-The next chunk, which does not evaluate, can be used as an alternative to the previous one, in case we want to plot the difference from the mean instead of the value. The shape of the plot will be the same, only the scale on the y-axis will change.
+The next chunk, which is not evaluated, can be used as an alternative to the previous one, in case we want to plot the difference from the mean instead of the value. The shape of the plot will be the same, only the scale on the y-axis will change.
 
 ```{r eval=FALSE}
 # The next two lines will compute the difference between the average number of 
 # steps for one inerval and the mean number of steps across all intervals.
-# It can be used later to produce an alternative plot.
 g = mean(df_agg_int$avg.steps)
 df_agg_int <- mutate(df_agg_int, diff = avg.steps - g)
 
